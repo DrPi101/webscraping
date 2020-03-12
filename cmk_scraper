@@ -1,0 +1,42 @@
+# http://scrapingkungfu.herokuapp.com/chamber_2
+# our task is to extract available items from all the movies elements below and store them to CSV file
+
+import requests
+from  bs4 import BeautifulSoup
+import csv
+import pandas as pd
+import numpy as np
+
+url = "http://scrapingkungfu.herokuapp.com/chamber_2"
+
+response = requests.get(url, 'html')
+
+print(response)
+
+# parse response
+soup = BeautifulSoup(response.text, 'lxml')
+
+#find number of rows 
+all = soup.find_all("div",{"class":"card-header text-left"})
+print (len(all), "items found")
+
+# extract data
+def ws():
+    ls = []
+    for ele in soup.find_all('div' ,{'class' : 'card mt-3'}):   
+            Title = ele.find('div', { "class" : "card-header text-left"}).text
+            Title = Title.strip()
+            Genre = ele.find('span', {'class' : 'movie-genre'}).text
+            Country = ele.find('span', {'class' : 'movie-country'}).text
+            Year = ele.find('span', {'class' : 'movie-year'}).text
+            Starring = ele.find('span', {'class' : 'movie-starring'}).text
+            ls.append (f"{Title},{Genre},{Country},{Year}\n")
+    return ls
+header = ['Title', 'Genre', 'Country','Year','Starring']
+with open('output.csv', 'w') as f:
+    csv_writer = csv.writer(f)
+    csv_writer.writerow(header)  
+    for line in ws():
+        f.write(line)
+
+print("Done! - check output csv in same Directory")
