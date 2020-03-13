@@ -18,7 +18,7 @@ def fetch(url):
     soup = BeautifulSoup(response.text,'lxml')
 
     for idx,link in enumerate(soup.select("img[src^=http]")):
-        print(f"downloading image : {idx+1} {link}")
+        print(f"downloading image : {idx+1}")
         lnk = link["src"]
         print(lnk)
         with open(basename(lnk),"wb") as f:
