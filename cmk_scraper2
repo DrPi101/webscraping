@@ -1,0 +1,31 @@
+import requests
+from bs4 import BeautifulSoup
+from os.path  import basename
+
+url = "https://scrapingkungfu.herokuapp.com/chamber_4"
+
+def check_url(url):
+    response = requests.get(url)
+    try:    
+         response.raise_for_status()
+    except requests.exceptions.HTTPError as e:
+        # shit - it wasn't a 200
+        return "Error: " + str(e)
+    print(response)
+
+def fetch(url):
+    response = requests.get(url)
+    soup = BeautifulSoup(response.text,'lxml')
+
+    for idx,link in enumerate(soup.select("img[src^=http]")):
+        print(f"downloading image : {idx+1} {link}")
+        lnk = link["src"]
+        print(lnk)
+        with open(basename(lnk),"wb") as f:
+            f.write(requests.get(lnk).content)
+            
+    print("All done, check cwd")
+    print("Brought to you by Dr Pi, with thanks to Code Monkey King")
+
+check_url(url)    
+fetch(url)
