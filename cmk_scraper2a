@@ -1,0 +1,35 @@
+# chambers_2, fixed version - Dr Pi, thanks to Maksim Korzh aka Code Monkey King
+
+import requests
+from  bs4 import BeautifulSoup
+import csv
+import pandas
+
+url = "http://scrapingkungfu.herokuapp.com/chamber_2"
+
+response = requests.get(url, 'html')
+
+print(response)
+
+# parse response
+soup = BeautifulSoup(response.text, 'lxml')
+
+# extract data
+odiv = soup.find_all('div' ,{'class' : 'card mt-3'})
+
+ls = [] #
+for i in odiv:
+        d = {}
+        Title = i.find('div', { "class" : "card-header text-left"}).text
+        d["Title"] = Title.strip()
+        d["Genre"] = i.find('span', {'class' : 'movie-genre'}).text
+        d["Country"] = i.find('span', {'class' : 'movie-country'}).text
+        d["Year"] = i.find('span', {'class' : 'movie-year'}).text
+        d["Director"] = i.find('span', {'class' : 'movie-director'}).text
+        d["Starring"] = i.find('span', {'class' : 'movie-starring'}).text
+
+       ls.append(d)
+
+print(len(ls))
+df = pandas.DataFrame(ls)
+df.to_csv("outc2.csv")
